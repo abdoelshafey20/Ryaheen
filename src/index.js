@@ -1,44 +1,26 @@
+import path from "path";
+import { declare } from "@babel/helper-plugin-utils";
 
-import { createRoot } from "react-dom/client";
-import {
-  createBrowserRouter,
-  RouterProvider,
- 
-} from "react-router-dom";
-import App from "./App";
-import AllBranches from "./Branches/AllBranches";
-import AllDetails from "./Details/AllDetails";
-import AllContact from "./Contact/AllContact";
-import ScrollToTop from "react-scroll-to-top";
+/**
+ * @babel/preset-modules produces clean, minimal output for ES Modules-supporting browsers.
+ * @param {Object} [options]
+ * @param {boolean} [options.loose=false] Loose mode skips seldom-needed transforms that increase output size.
+ */
+export default declare((api, opts) => {
+  api.assertVersion(7);
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App/>
-  },
-  {
-    path: "branches",
-    element: <AllBranches/>,
-  },
-  {
-    path: "details",
-    element: <AllDetails/>,
-  },
-  {
-    path: "contact",
-    element: <AllContact/>,
-  },
-]);
+  const loose = opts.loose === true;
 
-createRoot(document.getElementById("root")).render(
-<div>
-
-    <ScrollToTop smooth className="back-to-top"
-   
-    svgPath="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 192 320c0 17.7 14.3 32 32 32s32-14.3 32-32l0-210.7 73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-64z"
-    viewBox="0 0 448 512"/>
- 
-    <RouterProvider router={router} />
-</div>
-
-);
+  return {
+    plugins: [
+      path.resolve(__dirname, "./plugins/transform-edge-default-parameters"),
+      path.resolve(__dirname, "./plugins/transform-tagged-template-caching"),
+      path.resolve(__dirname, "./plugins/transform-jsx-spread"),
+      path.resolve(__dirname, "./plugins/transform-safari-for-shadowing"),
+      path.resolve(__dirname, "./plugins/transform-safari-block-shadowing"),
+      path.resolve(__dirname, "./plugins/transform-async-arrows-in-class"),
+      !loose &&
+        path.resolve(__dirname, "./plugins/transform-edge-function-name"),
+    ].filter(Boolean),
+  };
+});
